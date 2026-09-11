@@ -1,0 +1,128 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+#stage {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 10px;
+}
+
+.pose {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 800ms ease;
+  /* A soft white "sticker" halo so the black illustration still reads on a
+     dark desktop background, layered under a faint dark shadow for depth on
+     light backgrounds. */
+  filter: drop-shadow(0 0 2.5px #fff) drop-shadow(0 0 2.5px #fff) drop-shadow(0 0 5px #fff)
+    drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
+}
+
+.pose.visible {
+  opacity: 1;
+}
+
+/* Sleeping: slow breathing */
+.pose-sleeping .body {
+  transform-origin: 108px 128px;
+  animation: breathe 4s ease-in-out infinite;
+}
+
+/* Stretching: a gentle sway, like settling into the stretch */
+.pose-stretching .body {
+  transform-origin: 90px 140px;
+  animation: sway 3s ease-in-out infinite;
+}
+.pose-stretching .tail {
+  transform-origin: 148px 108px;
+  animation: tailflick 2.4s ease-in-out infinite;
+}
+
+/* Playing: a curious tail twitch and paw hover */
+.pose-playing .tail {
+  transform-origin: 128px 152px;
+  animation: tailflick 1.6s ease-in-out infinite;
+}
+.pose-playing .paw {
+  transform-origin: 96px 124px;
+  animation: pawbat 1.4s ease-in-out infinite;
+}
+.pose-playing .yarn {
+  transform-origin: 168px 164px;
+  animation: wobble 1.4s ease-in-out infinite;
+}
+
+.eye-group {
+  animation: blink 6s ease-in-out infinite;
+  transform-origin: 60px 100px;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02, 0.98);
+  }
+}
+
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-1.5deg);
+  }
+}
+
+@keyframes tailflick {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+}
+
+@keyframes pawbat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(-8deg);
+  }
+}
+
+@keyframes wobble {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  96% {
+    transform: scaleY(0.1);
+  }
+}

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="stage">
+      <!-- Sleeping: a curled-up "cat loaf" -->
+      <svg
+        class="pose pose-sleeping"
+        viewBox="0 0 200 200"
+        width="200"
+        height="200"
+        aria-hidden="true"
+      >
+        <g class="body">
+          <ellipse class="tail" cx="152" cy="146" rx="26" ry="13" transform="rotate(18 152 146)" fill="#000" />
+          <ellipse cx="108" cy="128" rx="72" ry="46" fill="#000" />
+          <ellipse cx="58" cy="96" rx="40" ry="34" fill="#000" />
+          <path class="ear-left" d="M 30 74 L 22 46 L 52 66 Z" fill="#000" />
+          <path class="ear-right" d="M 78 66 L 96 42 L 92 72 Z" fill="#000" />
+          <ellipse cx="128" cy="150" rx="26" ry="16" fill="#fff" />
+          <g class="eye-group">
+            <path d="M 40 96 Q 47 101 54 96" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" />
+            <path d="M 66 94 Q 73 99 80 94" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" />
+          </g>
+          <path d="M 57 106 L 62 106 L 59.5 110 Z" fill="#fff" />
+          <path d="M 20 100 L 2 98" stroke="#fff" stroke-width="1.5" stroke-linecap="round" />
+          <path d="M 20 106 L 3 108" stroke="#fff" stroke-width="1.5" stroke-linecap="round" />
+          <path d="M 96 100 L 114 96" stroke="#fff" stroke-width="1.5" stroke-linecap="round" />
+          <path d="M 96 106 L 115 110" stroke="#fff" stroke-width="1.5" stroke-linecap="round" />
+        </g>
+      </svg>
+
+      <!-- Stretching: back arched high, front paws forward, head low -->
+      <svg
+        class="pose pose-stretching"
+        viewBox="0 0 200 200"
+        width="200"
+        height="200"
+        aria-hidden="true"
+      >
+        <g class="body">
+          <path
+            d="M 30 168
+               C 28 152, 34 140, 46 138
+               C 40 118, 46 90, 70 74
+               C 92 60, 120 60, 140 76
+               C 156 88, 158 106, 148 112
+               C 156 118, 158 132, 148 136
+               C 130 144, 108 132, 100 116
+               C 92 128, 80 140, 80 156
+               C 80 166, 74 170, 64 170
+               C 55 170, 46 168, 40 168
+               Z"
+            fill="#000"
+          />
+          <path class="tail" d="M 148 108 C 168 96, 182 100, 188 88" stroke="#000" stroke-width="16" stroke-linecap="round" fill="none" />
+          <path class="ear-left" d="M 74 66 L 70 44 L 92 60 Z" fill="#000" />
+          <path class="ear-right" d="M 108 60 L 122 40 L 128 62 Z" fill="#000" />
+          <ellipse cx="46" cy="160" rx="14" ry="9" fill="#fff" />
+          <ellipse cx="70" cy="164" rx="12" ry="8" fill="#fff" />
+          <g class="eye-group">
+            <path d="M 62 112 Q 68 108 74 112" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" />
+            <path d="M 84 110 Q 90 106 96 110" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" />
+          </g>
+          <path class="mouth" d="M 78 122 Q 82 128 88 122" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none" />
+          <path d="M 60 116 L 40 112" stroke="#fff" stroke-width="1.5" stroke-linecap="round" />
+          <path d="M 60 120 L 40 122" stroke="#fff" stroke-width="1.5" stroke-linecap="round" />
+        </g>
+      </svg>
+
+      <!-- Playing: crouched, one paw raised, batting at a ball of yarn -->
+      <svg
+        class="pose pose-playing"
+        viewBox="0 0 200 200"
+        width="200"
+        height="200"
+        aria-hidden="true"
+      >
+        <g class="body">
+          <path class="tail" d="M 128 152 C 154 148, 166 122, 150 100 C 143 90, 150 80, 163 80" stroke="#000" stroke-width="15" stroke-linecap="round" fill="none" />
+          <ellipse cx="86" cy="145" rx="54" ry="30" fill="#000" />
+          <path class="paw" d="M 96 124 C 98 108, 106 94, 122 84" stroke="#000" stroke-width="17" stroke-linecap="round" fill="none" />
+          <circle class="paw" cx="123" cy="82" r="11" fill="#000" />
+          <ellipse cx="52" cy="98" rx="36" ry="32" fill="#000" />
+          <path class="ear-left" d="M 26 78 L 18 52 L 46 70 Z" fill="#000" />
+          <path class="ear-right" d="M 66 70 L 82 46 L 80 76 Z" fill="#000" />
+          <ellipse cx="108" cy="158" rx="20" ry="12" fill="#fff" />
+          <g class="eye-group">
+            <circle cx="42" cy="96" r="4.5" fill="#fff" />
+            <circle cx="66" cy="92" r="4.5" fill="#fff" />
+          </g>
+          <path d="M 51 106 L 56 106 L 53.5 110 Z" fill="#fff" />
+          <path d="M 16 100 L -2 96" stroke="#fff" stroke-width="1.5" stroke-linecap="round" />
+          <path d="M 16 106 L -1 110" stroke="#fff" stroke-width="1.5" stroke-linecap="round" />
+          <path d="M 88 98 L 106 92" stroke="#fff" stroke-width="1.5" stroke-linecap="round" />
+          <path d="M 88 104 L 107 106" stroke="#fff" stroke-width="1.5" stroke-linecap="round" />
+          <g class="yarn">
+            <circle cx="168" cy="164" r="15" fill="#000" />
+            <path d="M 158 158 Q 168 164 178 158" stroke="#fff" stroke-width="1.5" fill="none" />
+            <path d="M 156 166 Q 168 172 180 166" stroke="#fff" stroke-width="1.5" fill="none" />
+            <path d="M 160 152 Q 168 164 176 176" stroke="#fff" stroke-width="1.5" fill="none" />
+          </g>
+        </g>
+      </svg>
+    </div>
+    <script src="renderer.js"></script>
+  </body>
+</html>
