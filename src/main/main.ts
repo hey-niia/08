@@ -1,6 +1,6 @@
 import { app } from "electron";
 import { createPopupWindow } from "./popupWindow";
-import { startScheduler } from "./scheduler";
+import { showPopup, startAutoSchedule } from "./scheduler";
 import { createTray } from "./tray";
 
 app.whenReady().then(() => {
@@ -9,8 +9,11 @@ app.whenReady().then(() => {
   }
 
   const popup = createPopupWindow();
-  const triggerPopup = startScheduler(popup);
-  createTray(triggerPopup);
+  createTray(popup);
+  startAutoSchedule(popup);
+
+  // Show herself once shortly after launch, so the app confirms it's alive.
+  setTimeout(() => showPopup(popup), 15000);
 });
 
 app.on("window-all-closed", () => {

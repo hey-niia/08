@@ -1,34 +1,53 @@
 import { BrowserWindow } from "electron";
 import { repositionWindow } from "./popupWindow";
+import { getStayMinutes } from "./settings";
 
-const INTERVAL_MS = 3 * 60 * 1000;
-const FADE_MS = 800;
-const HOLD_MS = 9000;
-const TOTAL_VISIBLE_MS = FADE_MS + HOLD_MS + FADE_MS;
+/** Fixed for now: how often she checks in on her own, regardless of the stay-duration setting. */
+const AUTO_INTERVAL_MS = 5 * 60 * 1000;
 
 let hideTimer: ReturnType<typeof setTimeout> | null = null;
 
-export function startScheduler(win: BrowserWindow): () => void {
-  const triggerPopup = () => {
-    if (hideTimer) {
-      clearTimeout(hideTimer);
-      hideTimer = null;
-      win.hide();
-    }
-    repositionWindow(win);
-    win.showInactive();
-    win.webContents
-      .executeJavaScript("window.__playRandomPose && window.__playRandomPose()")
-      .catch(() => {});
-    hideTimer = setTimeout(() => {
-      win.hide();
-      hideTimer = null;
-    }, TOTAL_VISIBLE_MS);
-  };
+function clearHideTimer(): void {
+  if (hideTimer) {
+    clearTimeout(hideTimer);
+    hideTimer = null;
+  }
+}
 
-  // Show herself once shortly after launch, so the app confirms it's alive.
-  setTimeout(triggerPopup, 15000);
-  setInterval(triggerPopup, INTERVAL_MS);
+function armHideTimer(win: BrowserWindow): void {
+  clearHideTimer();
+  const minutes = getStayMinutes();
+  if (minutes == null) return; // stays until manually hidden
+  hideTimer = setTimeout(() => hidePopup(win), minutes * 60 * 1000);
+}
 
-  return triggerPopup;
+export function showPopup(win: BrowserWindow): void {
+  if (win.isVisible()) return;
+  repositionWindow(win);
+  win.showInactive();
+  win.webContents
+    .executeJavaScript("window.__playRandomPose && window.__playRandomPose()")
+    .catch(() => {});
+  armHideTimer(win);
+}
+
+export function hidePopup(win: BrowserWindow): void {
+  clearHideTimer();
+  win.hide();
+}
+
+export function togglePopup(win: BrowserWindow): void {
+  if (win.isVisible()) hidePopup(win);
+  else showPopup(win);
+}
+
+/** Call after the stay-duration setting changes, to reschedule a currently-visible appearance. */
+export function onDurationChanged(win: BrowserWindow): void {
+  if (win.isVisible()) armHideTimer(win);
+}
+
+export function startAutoSchedule(win: BrowserWindow): void {
+  setInterval(() => {
+    if (!win.isVisible()) showPopup(win);
+  }, AUTO_INTERVAL_MS);
 }

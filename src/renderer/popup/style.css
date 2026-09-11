@@ -6,103 +6,99 @@ body {
   overflow: hidden;
   width: 100%;
   height: 100%;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #stage {
   position: relative;
-  width: 200px;
-  height: 200px;
-  margin: 10px;
+  width: 220px;
+  height: 220px;
+  -webkit-app-region: drag;
+  cursor: grab;
 }
 
 .pose {
   position: absolute;
-  inset: 0;
+  left: 8px;
+  top: 8px;
   opacity: 0;
-  transition: opacity 800ms ease;
-  /* A soft white "sticker" halo so the black illustration still reads on a
-     dark desktop background, layered under a faint dark shadow for depth on
+  transition: opacity 500ms steps(3);
+  /* A soft white "sticker" halo so the black pixel art still reads on a dark
+     desktop background, layered under a faint dark shadow for depth on
      light backgrounds. */
-  filter: drop-shadow(0 0 2.5px #fff) drop-shadow(0 0 2.5px #fff) drop-shadow(0 0 5px #fff)
-    drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff) drop-shadow(0 0 4px #fff)
+    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  shape-rendering: crispEdges;
 }
 
 .pose.visible {
   opacity: 1;
 }
 
-/* Sleeping: slow breathing */
-.pose-sleeping .body {
-  transform-origin: 108px 128px;
-  animation: breathe 4s ease-in-out infinite;
+/* Idle bob — whole sprite, blocky (stepped) motion to match the pixel-art feel */
+.pose.visible .body {
+  animation: bob 1.6s steps(2) infinite;
 }
 
-/* Stretching: a gentle sway, like settling into the stretch */
-.pose-stretching .body {
-  transform-origin: 90px 140px;
-  animation: sway 3s ease-in-out infinite;
-}
-.pose-stretching .tail {
-  transform-origin: 148px 108px;
-  animation: tailflick 2.4s ease-in-out infinite;
+/* Eye blink — mostly open, briefly hidden */
+.pose.visible .eye {
+  animation: blink 5s steps(1) infinite;
 }
 
-/* Playing: a curious tail twitch and paw hover */
-.pose-playing .tail {
-  transform-origin: 128px 152px;
-  animation: tailflick 1.6s ease-in-out infinite;
-}
-.pose-playing .paw {
-  transform-origin: 96px 124px;
-  animation: pawbat 1.4s ease-in-out infinite;
-}
-.pose-playing .yarn {
-  transform-origin: 168px 164px;
-  animation: wobble 1.4s ease-in-out infinite;
+.pose-stretching.visible .tail {
+  animation: bob 1.6s steps(2) infinite, tailwag 2.2s steps(2) infinite;
 }
 
-.eye-group {
-  animation: blink 6s ease-in-out infinite;
-  transform-origin: 60px 100px;
+.pose-playing.visible .paw {
+  animation: bob 1.6s steps(2) infinite, pawbat 1.1s steps(2) infinite;
+}
+.pose-playing.visible .tail {
+  animation: bob 1.6s steps(2) infinite, tailwag 1.8s steps(2) infinite;
+}
+.pose-playing.visible .yarn,
+.pose-playing.visible .yarn-dot {
+  animation: bob 1.6s steps(2) infinite, wobble 1.2s steps(2) infinite;
 }
 
-@keyframes breathe {
+@keyframes bob {
   0%,
   100% {
-    transform: scale(1);
+    transform: translateY(0);
   }
   50% {
-    transform: scale(1.02, 0.98);
+    transform: translateY(-2px);
   }
 }
 
-@keyframes sway {
+@keyframes blink {
   0%,
+  90%,
   100% {
-    transform: rotate(0deg);
+    opacity: 1;
   }
-  50% {
-    transform: rotate(-1.5deg);
+  95% {
+    opacity: 0;
   }
 }
 
-@keyframes tailflick {
+@keyframes tailwag {
   0%,
   100% {
-    transform: rotate(0deg);
+    transform: translate(0, 0);
   }
   50% {
-    transform: rotate(8deg);
+    transform: translate(2px, -1px);
   }
 }
 
 @keyframes pawbat {
   0%,
   100% {
-    transform: translateY(0) rotate(0deg);
+    transform: translateY(0);
   }
   50% {
-    transform: translateY(-6px) rotate(-8deg);
+    transform: translateY(-3px);
   }
 }
 
@@ -113,16 +109,5 @@ body {
   }
   50% {
     transform: rotate(6deg);
-  }
-}
-
-@keyframes blink {
-  0%,
-  92%,
-  100% {
-    transform: scaleY(1);
-  }
-  96% {
-    transform: scaleY(0.1);
   }
 }

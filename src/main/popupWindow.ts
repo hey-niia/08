@@ -18,11 +18,10 @@ export function createPopupWindow(): BrowserWindow {
     backgroundColor: "#00000000",
     hasShadow: false,
     resizable: false,
-    movable: false,
+    movable: true,
     minimizable: false,
     maximizable: false,
     fullscreenable: false,
-    focusable: false,
     skipTaskbar: true,
     show: false,
     webPreferences: {
@@ -34,7 +33,6 @@ export function createPopupWindow(): BrowserWindow {
 
   win.setAlwaysOnTop(true, "floating");
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  win.setIgnoreMouseEvents(true);
   win.loadFile(path.join(__dirname, "../renderer/popup/index.html"));
 
   return win;
