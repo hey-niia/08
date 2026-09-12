@@ -1,11 +1,9 @@
 import { BrowserWindow } from "electron";
 import { repositionWindow } from "./popupWindow";
-import { getStayMinutes } from "./settings";
-
-/** Fixed for now: how often she checks in on her own, regardless of the stay-duration setting. */
-const AUTO_INTERVAL_MS = 5 * 60 * 1000;
+import { getStayMinutes, getShowEveryMinutes } from "./settings";
 
 let hideTimer: ReturnType<typeof setTimeout> | null = null;
+let autoInterval: ReturnType<typeof setInterval> | null = null;
 
 function clearHideTimer(): void {
   if (hideTimer) {
@@ -46,8 +44,15 @@ export function onDurationChanged(win: BrowserWindow): void {
   if (win.isVisible()) armHideTimer(win);
 }
 
-export function startAutoSchedule(win: BrowserWindow): void {
-  setInterval(() => {
+/** (Re)starts the auto-appear interval from the current show-every setting. Safe to call anytime the setting changes. */
+export function restartAutoSchedule(win: BrowserWindow): void {
+  if (autoInterval) {
+    clearInterval(autoInterval);
+    autoInterval = null;
+  }
+  const minutes = getShowEveryMinutes();
+  if (minutes == null) return; // manual only
+  autoInterval = setInterval(() => {
     if (!win.isVisible()) showPopup(win);
-  }, AUTO_INTERVAL_MS);
+  }, minutes * 60 * 1000);
 }

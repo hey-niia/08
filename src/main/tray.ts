@@ -1,11 +1,16 @@
 import { app, BrowserWindow, Menu, nativeImage, Tray } from "electron";
 import * as path from "path";
-import { togglePopup, onDurationChanged } from "./scheduler";
-import { getStayMinutes, setStayMinutes } from "./settings";
+import { togglePopup, onDurationChanged, restartAutoSchedule } from "./scheduler";
+import {
+  getStayMinutes,
+  setStayMinutes,
+  getShowEveryMinutes,
+  setShowEveryMinutes,
+} from "./settings";
 
 let tray: Tray | null = null;
 
-const DURATION_OPTIONS: { label: string; minutes: number | null }[] = [
+const STAY_OPTIONS: { label: string; minutes: number | null }[] = [
   { label: "1 minute", minutes: 1 },
   { label: "3 minutes", minutes: 3 },
   { label: "5 minutes", minutes: 5 },
@@ -14,18 +19,39 @@ const DURATION_OPTIONS: { label: string; minutes: number | null }[] = [
   { label: "Until I hide her", minutes: null },
 ];
 
+const FREQUENCY_OPTIONS: { label: string; minutes: number | null }[] = [
+  { label: "Every 5 minutes", minutes: 5 },
+  { label: "Every 15 minutes", minutes: 15 },
+  { label: "Every 25 minutes", minutes: 25 },
+  { label: "Every 50 minutes", minutes: 50 },
+  { label: "Off — manual only", minutes: null },
+];
+
 function buildMenu(win: BrowserWindow): Menu {
-  const current = getStayMinutes();
+  const currentStay = getStayMinutes();
+  const currentFrequency = getShowEveryMinutes();
 
   return Menu.buildFromTemplate([
     { label: win.isVisible() ? "Hide" : "Show 08 now", click: () => togglePopup(win) },
     { type: "separator" },
     {
-      label: "Stay on screen",
-      submenu: DURATION_OPTIONS.map(({ label, minutes }) => ({
+      label: "Show every",
+      submenu: FREQUENCY_OPTIONS.map(({ label, minutes }) => ({
         label,
         type: "radio",
-        checked: current === minutes,
+        checked: currentFrequency === minutes,
+        click: () => {
+          setShowEveryMinutes(minutes);
+          restartAutoSchedule(win);
+        },
+      })),
+    },
+    {
+      label: "Stay on screen",
+      submenu: STAY_OPTIONS.map(({ label, minutes }) => ({
+        label,
+        type: "radio",
+        checked: currentStay === minutes,
         click: () => {
           setStayMinutes(minutes);
           onDurationChanged(win);

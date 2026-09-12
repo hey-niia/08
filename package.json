@@ -1,7 +1,7 @@
 {
   "name": "08",
   "version": "0.1.0",
-  "description": "A tiny black-and-white cat who lives on your Mac and reminds you to rest.",
+  "description": "A tiny Pomodoro-style break reminder shaped like a cat.",
   "main": "dist/main/main.js",
   "author": "Niia Bieliavtseva",
   "license": "MIT",

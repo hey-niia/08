@@ -5,9 +5,11 @@ import * as path from "path";
 interface Settings {
   /** Minutes she stays visible before auto-hiding; null = stays until manually hidden. */
   stayMinutes: number | null;
+  /** How often she checks in on her own; null = manual only (no automatic schedule). */
+  showEveryMinutes: number | null;
 }
 
-const DEFAULTS: Settings = { stayMinutes: 5 };
+const DEFAULTS: Settings = { stayMinutes: 5, showEveryMinutes: 5 };
 
 function filePath(): string {
   return path.join(app.getPath("userData"), "settings.json");
@@ -28,11 +30,12 @@ function load(): Settings {
   return loaded;
 }
 
-function persist(settings: Settings): void {
-  cache = settings;
+function persist(patch: Partial<Settings>): void {
+  const next = { ...load(), ...patch };
+  cache = next;
   try {
     fs.mkdirSync(path.dirname(filePath()), { recursive: true });
-    fs.writeFileSync(filePath(), JSON.stringify(settings));
+    fs.writeFileSync(filePath(), JSON.stringify(next));
   } catch {
     // Best-effort persistence — a failed write just means the default wins next launch.
   }
@@ -43,6 +46,13 @@ export function getStayMinutes(): number | null {
 }
 
 export function setStayMinutes(minutes: number | null): void {
-  console.log("[08] setStayMinutes called with", minutes, "path:", filePath());
   persist({ stayMinutes: minutes });
+}
+
+export function getShowEveryMinutes(): number | null {
+  return load().showEveryMinutes;
+}
+
+export function setShowEveryMinutes(minutes: number | null): void {
+  persist({ showEveryMinutes: minutes });
 }
