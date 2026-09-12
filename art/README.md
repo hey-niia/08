@@ -30,3 +30,24 @@ Coordinates are in an arbitrary working canvas (`CANVAS = 900` by default) — d
 that scale, the script downsamples to `GRID` cells (48 by default) and re-emits at
 `CELL = 5` px/cell for the final SVG. Bump `GRID` for more detail, `CELL` to change
 the on-screen size.
+
+## App icon & tray icon
+
+Both `build/icon.icns` and `build/trayTemplate.png`/`@2x.png` are generated
+directly from 08's own `sitting` sprite
+(`src/renderer/popup/sprites/08/sitting.png`) — not hand-drawn separately —
+so the logo is literally her, not a redrawn glyph. The sprite's eyes/belly
+patch are opaque white, which a macOS template image would just render as
+more solid black (template images only read alpha), so the first step turns
+those into real transparent cutouts:
+
+```bash
+magick sitting.png -fuzz 0 -transparent white cutout.png
+```
+
+From `cutout.png`: the tray icon is a plain nearest-neighbor resize to the
+real menu-bar heights (`-filter point -resize x22` / `x44`, to keep the pixel
+edges crisp instead of blurring them); the app icon is the same cutout
+resized and composited (`-gravity center -composite`) onto the existing
+white rounded-square background (`rx="220"` on a 1024×1024 canvas), at each
+size `iconutil` needs, then packed with `iconutil -c icns`.
