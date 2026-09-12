@@ -3,7 +3,7 @@
 A tiny Pomodoro-style break reminder shaped like a cat.
 
 <p align="center">
-  <img src="build/icon.png" width="160" alt="08 app icon" />
+  <img src="08-cover.png" width="720" alt="08, Biscuit, Ash, and Mocha wandering the screen with the tray menu open" />
 </p>
 
 ## Download
@@ -18,11 +18,11 @@ xattr -cr /Applications/08.app
 
 ## About
 
-Tell 08 how often to check in and how long to stay, and she'll show up — napping, stretching, crouching for a snack, or actually walking the width of your screen — then disappear. Everything's set from the tray icon:
+Tell 08 how often to check in and how long to stay, and she'll show up — napping, stretching, crouching for a snack, or actually wandering the screen like she owns it — then disappear. Everything's set from the tray icon:
 
 - **Number of cats** — 1 to 4. Just 08, or bring in Biscuit, Ash, and Mocha too, each on their own independent schedule
 - **Show every** — 5 / 15 / 25 / 50 minutes, or off (manual only)
-- **Stay on screen** — 1 / 3 / 5 / 10 / 15 minutes, or until you hide her (doesn't apply while she's mid-walk — she just finishes crossing the screen)
+- **Stay on screen** — 1 / 3 / 5 / 10 / 15 minutes, or until you hide her
 
 No tasks, no streaks, no guilt-tripping if you skip a "session." No chat, no clicking through menus, no productivity feature hiding underneath, either. Just a small, pixelated cue that it's time to look away for a second.
 
