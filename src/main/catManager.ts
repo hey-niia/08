@@ -47,8 +47,11 @@ function startSchedule(instance: CatInstance, staggerMs: number): () => void {
 }
 
 /** Tears down all current cat windows/schedules and recreates them from settings.
- * Call at startup and whenever the cat-count setting changes. */
+ * Call at startup and whenever the cat-count setting changes. If cats were currently
+ * shown, the rebuilt set is shown right away too — changing the count should never
+ * be the thing that makes the cats disappear. */
 export function rebuildCats(): void {
+  const wasOut = anyOut();
   managed.forEach(({ instance, stopSchedule }) => {
     stopSchedule();
     instance.destroy();
@@ -58,6 +61,9 @@ export function rebuildCats(): void {
     const stopSchedule = startSchedule(instance, index * 20000);
     return { instance, stopSchedule };
   });
+  if (wasOut) {
+    managed.forEach(({ instance }) => instance.trigger());
+  }
   onChangeListeners.forEach((listener) => listener());
 }
 

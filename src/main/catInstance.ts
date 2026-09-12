@@ -5,7 +5,9 @@ import { getStayMinutes } from "./settings";
 import { CatDef } from "./cats";
 
 const CORNER_POSES = ["sitting", "sleeping", "stretching", "playing"];
-const ACTIONS = [...CORNER_POSES, "walking"];
+// Walking is the flagship behavior (the actual cross-screen run) — make it the default,
+// with the quieter corner poses as an occasional accent rather than the common case.
+const WALK_PROBABILITY = 0.7;
 
 const WALK_STEP_PX = 6;
 const WALK_TICK_MS = 70;
@@ -30,11 +32,11 @@ export class CatInstance {
   /** Auto-schedule or manual "show now" both funnel through here — picks a random action. */
   trigger(): void {
     if (this.isOut()) return;
-    const action = ACTIONS[Math.floor(Math.random() * ACTIONS.length)];
-    if (action === "walking") {
+    if (Math.random() < WALK_PROBABILITY) {
       this.startWalk();
     } else {
-      this.showCornerPose(action);
+      const pose = CORNER_POSES[Math.floor(Math.random() * CORNER_POSES.length)];
+      this.showCornerPose(pose);
     }
   }
 
@@ -49,9 +51,9 @@ export class CatInstance {
     else this.trigger();
   }
 
-  /** Call after the stay-duration setting changes, to reschedule a currently-visible corner pose. */
+  /** Call after the stay-duration setting changes, to reschedule a currently-visible cat. */
   onDurationChanged(): void {
-    if (this.win.isVisible() && !this.walking) this.armHideTimer();
+    if (this.win.isVisible()) this.armHideTimer();
   }
 
   destroy(): void {
@@ -83,19 +85,28 @@ export class CatInstance {
 
   private startWalk(): void {
     this.walking = true;
+    this.win.showInactive();
+    this.win.webContents.executeJavaScript("window.__showWalk && window.__showWalk(true)").catch(() => {});
+    this.armHideTimer();
+    this.runWalkPass();
+  }
+
+  /** One crossing of the screen. When it reaches the far edge, loops into another
+   * pass from the opposite side — the cat keeps running back and forth until
+   * hide()/armHideTimer stops it, instead of vanishing after a single crossing. */
+  private runWalkPass(): void {
     const [, height] = this.win.getSize();
     const track = getWalkTrack(height);
     const leftToRight = Math.random() < 0.5;
     let x = leftToRight ? track.leftX : track.rightX;
 
     this.win.setPosition(Math.round(x), Math.round(track.y));
-    this.win.showInactive();
-    this.win.webContents.executeJavaScript("window.__showWalk && window.__showWalk(true)").catch(() => {});
 
     let tick = 0;
     let frame = 0;
     const dir = leftToRight ? 1 : -1;
 
+    if (this.walkInterval) clearInterval(this.walkInterval);
     this.walkInterval = setInterval(() => {
       x += WALK_STEP_PX * dir;
       tick++;
@@ -109,7 +120,13 @@ export class CatInstance {
       }
 
       const reachedEnd = leftToRight ? x >= track.rightX : x <= track.leftX;
-      if (reachedEnd) this.endWalk();
+      if (reachedEnd) {
+        if (this.walkInterval) {
+          clearInterval(this.walkInterval);
+          this.walkInterval = null;
+        }
+        if (this.walking) this.runWalkPass();
+      }
     }, WALK_TICK_MS);
   }
 
