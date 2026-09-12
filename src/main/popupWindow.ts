@@ -1,10 +1,9 @@
 import { BrowserWindow } from "electron";
 import * as path from "path";
 import { getCornerPosition } from "./positioning";
-import { videoPath } from "./media";
 
-const WIDTH = 400;
-const HEIGHT = 300;
+const WIDTH = 220;
+const HEIGHT = 220;
 
 export function createPopupWindow(): BrowserWindow {
   const { x, y } = getCornerPosition(WIDTH, HEIGHT);
@@ -34,16 +33,9 @@ export function createPopupWindow(): BrowserWindow {
 
   win.setAlwaysOnTop(true, "floating");
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  loadContent(win);
+  win.loadFile(path.join(__dirname, "../renderer/popup/index.html"));
 
   return win;
-}
-
-/** Reloads the page pointing at the current video file — call again if the file changes. */
-export function loadContent(win: BrowserWindow): void {
-  const current = videoPath();
-  const query: Record<string, string> = current ? { video: `file://${current}` } : {};
-  win.loadFile(path.join(__dirname, "../renderer/popup/index.html"), { query });
 }
 
 export function repositionWindow(win: BrowserWindow): void {

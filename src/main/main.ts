@@ -2,14 +2,12 @@ import { app } from "electron";
 import { createPopupWindow } from "./popupWindow";
 import { showPopup, startAutoSchedule } from "./scheduler";
 import { createTray } from "./tray";
-import { ensureVideoDir } from "./media";
 
 app.whenReady().then(() => {
   if (process.platform === "darwin") {
     app.dock?.hide();
   }
 
-  ensureVideoDir();
   const popup = createPopupWindow();
   createTray(popup);
   startAutoSchedule(popup);

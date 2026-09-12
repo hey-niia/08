@@ -1,6 +1,6 @@
 # 08
 
-A tiny cat-video window that lives on your Mac.
+A tiny black-and-white cat who lives on your Mac.
 
 <p align="center">
   <img src="build/icon.png" width="160" alt="08 app icon" />
@@ -18,19 +18,17 @@ xattr -cr /Applications/08.app
 
 ## About
 
-08 lives quietly in your menu bar. Every few minutes, a small floating window pops up in the corner of your screen playing a muted video of a cat doing absolutely nothing productive — for as long as you tell it to, from one minute to "until I hide her."
+08 doesn't do anything, really. She lives quietly in your menu bar, and every few minutes she wanders into the corner of your screen — napping, stretching, or chasing a ball of yarn — for about ten seconds before disappearing again.
 
-That's the whole app. No chat, no clicking through menus, no productivity feature hiding underneath. Just a small, looping reminder that it's fine to stop and watch something lazy for a moment.
-
-**You supply the video.** 08 doesn't ship with one — right-click the tray icon and choose **"Add cat video…"** to open the folder it watches, then drop any `.mp4`, `.mov`, `.webm`, or `.m4v` file in there named anything you like (if you add more than one, the most recently added wins). Choose **"Reload video"** afterward to pick it up without restarting the app.
+That's the whole app. No chat, no clicking, no productivity feature hiding underneath. Just a small, illustrated reminder that it's fine to stop and do nothing for a moment, the way a cat does.
 
 ## The story
 
 08 is named after my actual cat. She spends most of her day asleep in a sunbeam, and it's genuinely one of the more grounding things to watch in the middle of a stressful work session.
 
-I wanted a tiny piece of software that borrowed that feeling — not another notification demanding attention, but the opposite: something that shows up, plays something lazy, and quietly suggests you could be a little lazy too.
+I wanted a tiny piece of software that borrowed that feeling — not another notification demanding attention, but the opposite: something that shows up, does nothing, and quietly suggests you could do nothing too, for a second.
 
-She lives in your menu bar (right-click the icon for "Show 08 now," to set how long she stays on screen, to add/reload her video, or to quit).
+She lives in your menu bar (click the icon for "Show 08 now" or to quit) and otherwise just shows up on her own schedule. No color, because she isn't one — just black-and-white ink, to match how she actually looks.
 
 ## Development
 
@@ -40,7 +38,7 @@ npm start          # run in dev
 npm run dist:mac   # build an unsigned universal dmg + zip
 ```
 
-Built with Electron + TypeScript. See `src/main` for the app shell (tray, scheduler, window, video lookup) and `src/renderer/popup` for the video player itself.
+Built with Electron + TypeScript. See `src/main` for the app shell (tray, scheduler, window) and `src/renderer/popup` for the illustrations.
 
 ## License
 

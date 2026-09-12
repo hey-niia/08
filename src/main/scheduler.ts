@@ -1,7 +1,6 @@
 import { BrowserWindow } from "electron";
 import { repositionWindow } from "./popupWindow";
 import { getStayMinutes } from "./settings";
-import { hasVideo } from "./media";
 
 /** Fixed for now: how often she checks in on her own, regardless of the stay-duration setting. */
 const AUTO_INTERVAL_MS = 5 * 60 * 1000;
@@ -26,6 +25,9 @@ export function showPopup(win: BrowserWindow): void {
   if (win.isVisible()) return;
   repositionWindow(win);
   win.showInactive();
+  win.webContents
+    .executeJavaScript("window.__playRandomPose && window.__playRandomPose()")
+    .catch(() => {});
   armHideTimer(win);
 }
 
@@ -46,6 +48,6 @@ export function onDurationChanged(win: BrowserWindow): void {
 
 export function startAutoSchedule(win: BrowserWindow): void {
   setInterval(() => {
-    if (!win.isVisible() && hasVideo()) showPopup(win);
+    if (!win.isVisible()) showPopup(win);
   }, AUTO_INTERVAL_MS);
 }
