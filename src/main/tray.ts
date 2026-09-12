@@ -93,9 +93,16 @@ function buildMenu(): Menu {
   ]);
 }
 
+function trayIconPath(): string {
+  // Packaged builds only ship dist/**/* inside the app — the source-tree build/
+  // folder isn't there, so the tray PNG is copied in separately as an extraResource.
+  return app.isPackaged
+    ? path.join(process.resourcesPath, "trayTemplate.png")
+    : path.join(__dirname, "../../build/trayTemplate.png");
+}
+
 export function createTray(): Tray {
-  const iconPath = path.join(__dirname, "../../build/trayTemplate.png");
-  const icon = nativeImage.createFromPath(iconPath);
+  const icon = nativeImage.createFromPath(trayIconPath());
   icon.setTemplateImage(true);
 
   tray = new Tray(icon);
