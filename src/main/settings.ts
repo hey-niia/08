@@ -7,9 +7,11 @@ interface Settings {
   stayMinutes: number | null;
   /** How often she checks in on her own; null = manual only (no automatic schedule). */
   showEveryMinutes: number | null;
+  /** How many cats from the roster are active (1-4). */
+  catCount: number;
 }
 
-const DEFAULTS: Settings = { stayMinutes: 5, showEveryMinutes: 5 };
+const DEFAULTS: Settings = { stayMinutes: 5, showEveryMinutes: 5, catCount: 1 };
 
 function filePath(): string {
   return path.join(app.getPath("userData"), "settings.json");
@@ -55,4 +57,12 @@ export function getShowEveryMinutes(): number | null {
 
 export function setShowEveryMinutes(minutes: number | null): void {
   persist({ showEveryMinutes: minutes });
+}
+
+export function getCatCount(): number {
+  return load().catCount;
+}
+
+export function setCatCount(count: number): void {
+  persist({ catCount: count });
 }

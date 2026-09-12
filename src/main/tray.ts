@@ -1,12 +1,23 @@
-import { app, BrowserWindow, Menu, nativeImage, Tray } from "electron";
+import { app, Menu, nativeImage, Tray } from "electron";
 import * as path from "path";
-import { togglePopup, onDurationChanged, restartAutoSchedule } from "./scheduler";
+import {
+  anyOut,
+  toggleAll,
+  onDurationChanged,
+  rebuildCats,
+  restartSchedules,
+  getWindows,
+  onWindowsChanged,
+} from "./catManager";
 import {
   getStayMinutes,
   setStayMinutes,
   getShowEveryMinutes,
   setShowEveryMinutes,
+  getCatCount,
+  setCatCount,
 } from "./settings";
+import { CATS } from "./cats";
 
 let tray: Tray | null = null;
 
@@ -27,13 +38,32 @@ const FREQUENCY_OPTIONS: { label: string; minutes: number | null }[] = [
   { label: "Off — manual only", minutes: null },
 ];
 
-function buildMenu(win: BrowserWindow): Menu {
+function buildMenu(): Menu {
   const currentStay = getStayMinutes();
   const currentFrequency = getShowEveryMinutes();
+  const currentCount = getCatCount();
 
   return Menu.buildFromTemplate([
-    { label: win.isVisible() ? "Hide" : "Show 08 now", click: () => togglePopup(win) },
+    { label: anyOut() ? "Hide" : "Show now", click: () => toggleAll() },
     { type: "separator" },
+    {
+      label: "Number of cats",
+      submenu: CATS.map((_cat, i) => {
+        const count = i + 1;
+        const names = CATS.slice(0, count)
+          .map((c) => c.name)
+          .join(", ");
+        return {
+          label: `${count} — ${names}`,
+          type: "radio" as const,
+          checked: currentCount === count,
+          click: () => {
+            setCatCount(count);
+            rebuildCats();
+          },
+        };
+      }),
+    },
     {
       label: "Show every",
       submenu: FREQUENCY_OPTIONS.map(({ label, minutes }) => ({
@@ -42,7 +72,7 @@ function buildMenu(win: BrowserWindow): Menu {
         checked: currentFrequency === minutes,
         click: () => {
           setShowEveryMinutes(minutes);
-          restartAutoSchedule(win);
+          restartSchedules();
         },
       })),
     },
@@ -54,7 +84,7 @@ function buildMenu(win: BrowserWindow): Menu {
         checked: currentStay === minutes,
         click: () => {
           setStayMinutes(minutes);
-          onDurationChanged(win);
+          onDurationChanged();
         },
       })),
     },
@@ -63,18 +93,26 @@ function buildMenu(win: BrowserWindow): Menu {
   ]);
 }
 
-export function createTray(win: BrowserWindow): Tray {
+export function createTray(): Tray {
   const iconPath = path.join(__dirname, "../../build/trayTemplate.png");
   const icon = nativeImage.createFromPath(iconPath);
   icon.setTemplateImage(true);
 
   tray = new Tray(icon);
   tray.setToolTip("08");
-  tray.setContextMenu(buildMenu(win));
 
-  const refresh = () => tray?.setContextMenu(buildMenu(win));
-  win.on("show", refresh);
-  win.on("hide", refresh);
+  const refresh = () => tray?.setContextMenu(buildMenu());
+
+  const attachWindowListeners = () => {
+    getWindows().forEach((win) => {
+      win.on("show", refresh);
+      win.on("hide", refresh);
+    });
+    refresh();
+  };
+
+  onWindowsChanged(attachWindowListeners);
+  attachWindowListeners();
 
   return tray;
 }

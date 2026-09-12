@@ -1,6 +1,5 @@
 import { app } from "electron";
-import { createPopupWindow } from "./popupWindow";
-import { showPopup, restartAutoSchedule } from "./scheduler";
+import { rebuildCats } from "./catManager";
 import { createTray } from "./tray";
 
 app.whenReady().then(() => {
@@ -8,15 +7,11 @@ app.whenReady().then(() => {
     app.dock?.hide();
   }
 
-  const popup = createPopupWindow();
-  createTray(popup);
-  restartAutoSchedule(popup);
-
-  // Show herself once shortly after launch, so the app confirms it's alive.
-  setTimeout(() => showPopup(popup), 15000);
+  rebuildCats();
+  createTray();
 });
 
 app.on("window-all-closed", () => {
-  // The popup window is only ever hidden, never closed — this is a no-op safety net.
+  // Cat windows are only ever hidden, never closed — this is a no-op safety net.
   // Intentionally not quitting here: only the tray's Quit does.
 });

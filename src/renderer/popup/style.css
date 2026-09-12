@@ -29,6 +29,11 @@ body {
   transition: opacity 500ms steps(3);
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+  /* <img> is natively draggable (HTML5 drag-and-drop), which hijacks mousedown
+     before -webkit-app-region:drag on #stage ever gets a chance — without this,
+     dragging the window by the cat doesn't work. */
+  -webkit-user-drag: none;
+  user-select: none;
   /* A soft white "sticker" halo so the sprite still reads on a dark desktop
      background, layered under a faint dark shadow for depth on light ones. */
   filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff) drop-shadow(0 0 4px #fff)
@@ -38,6 +43,12 @@ body {
 .pose.visible {
   opacity: 1;
   animation: bob 1.6s steps(2) infinite;
+}
+
+/* The walk cycle drives its own transform (mirroring) via JS each tick — the bob
+   keyframe would fight over the `transform` property, so she doesn't bob while walking. */
+.walk-frame.visible {
+  animation: none;
 }
 
 @keyframes bob {

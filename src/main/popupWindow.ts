@@ -1,11 +1,12 @@
 import { BrowserWindow } from "electron";
 import * as path from "path";
 import { getCornerPosition } from "./positioning";
+import { CatDef } from "./cats";
 
 const WIDTH = 220;
 const HEIGHT = 220;
 
-export function createPopupWindow(): BrowserWindow {
+export function createPopupWindow(cat: CatDef): BrowserWindow {
   const { x, y } = getCornerPosition(WIDTH, HEIGHT);
 
   const win = new BrowserWindow({
@@ -33,12 +34,14 @@ export function createPopupWindow(): BrowserWindow {
 
   win.setAlwaysOnTop(true, "floating");
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  win.loadFile(path.join(__dirname, "../renderer/popup/index.html"));
+  win.loadFile(path.join(__dirname, "../renderer/popup/index.html"), {
+    query: { cat: cat.id, walkFrames: String(cat.walkFrames) },
+  });
 
   return win;
 }
 
-export function repositionWindow(win: BrowserWindow): void {
+export function repositionToCorner(win: BrowserWindow): void {
   const [width, height] = win.getSize();
   const { x, y } = getCornerPosition(width, height);
   win.setPosition(x, y);
