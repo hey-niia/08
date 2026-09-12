@@ -20,50 +20,24 @@ body {
 
 .pose {
   position: absolute;
-  left: 8px;
-  top: 8px;
+  left: 50%;
+  top: 50%;
+  width: 176px;
+  height: 176px;
+  margin: -88px 0 0 -88px;
   opacity: 0;
   transition: opacity 500ms steps(3);
-  /* A soft white "sticker" halo so the black pixel art still reads on a dark
-     desktop background, layered under a faint dark shadow for depth on
-     light backgrounds. */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  /* A soft white "sticker" halo so the sprite still reads on a dark desktop
+     background, layered under a faint dark shadow for depth on light ones. */
   filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff) drop-shadow(0 0 4px #fff)
-    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-  shape-rendering: crispEdges;
+    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
 }
 
 .pose.visible {
   opacity: 1;
-}
-
-/* Idle bob — whole sprite, blocky (stepped) motion to match the pixel-art feel */
-.pose.visible .body {
   animation: bob 1.6s steps(2) infinite;
-}
-
-/* Eye blink — mostly open, briefly hidden */
-.pose.visible .eye {
-  animation: blink 5s steps(1) infinite;
-}
-
-.pose-sitting.visible .tail,
-.pose-walking.visible .tail {
-  animation: bob 1.6s steps(2) infinite, tailwag 2s steps(2) infinite;
-}
-
-.pose-stretching.visible .tail {
-  animation: bob 1.6s steps(2) infinite, tailwag 2.2s steps(2) infinite;
-}
-
-.pose-playing.visible .paw {
-  animation: bob 1.6s steps(2) infinite, pawbat 1.1s steps(2) infinite;
-}
-.pose-playing.visible .tail {
-  animation: bob 1.6s steps(2) infinite, tailwag 1.8s steps(2) infinite;
-}
-.pose-playing.visible .yarn,
-.pose-playing.visible .yarn-dot {
-  animation: bob 1.6s steps(2) infinite, wobble 1.2s steps(2) infinite;
 }
 
 @keyframes bob {
@@ -72,47 +46,6 @@ body {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-2px);
-  }
-}
-
-@keyframes blink {
-  0%,
-  90%,
-  100% {
-    opacity: 1;
-  }
-  95% {
-    opacity: 0;
-  }
-}
-
-@keyframes tailwag {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-  50% {
-    transform: translate(2px, -1px);
-  }
-}
-
-@keyframes pawbat {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
     transform: translateY(-3px);
-  }
-}
-
-@keyframes wobble {
-  0%,
-  100% {
-    transform: rotate(0deg);
-  }
-  50% {
-    transform: rotate(6deg);
   }
 }

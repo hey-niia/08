@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "tsc -p tsconfig.json && tsc -p tsconfig.renderer.json && mkdir -p dist/renderer/popup && cp src/renderer/popup/index.html src/renderer/popup/style.css dist/renderer/popup/",
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.renderer.json && mkdir -p dist/renderer/popup && cp src/renderer/popup/index.html src/renderer/popup/style.css dist/renderer/popup/ && cp -R src/renderer/popup/sprites dist/renderer/popup/",
     "start": "npm run build && electron dist/main/main.js",
     "dist:mac": "npm run build && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac --publish never"
   },
