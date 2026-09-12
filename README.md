@@ -27,9 +27,9 @@ No tasks, no streaks, no guilt-tripping if you skip a "session." No chat, no cli
 
 ## The story
 
-08 is named after my actual cat. She spends most of her day asleep in a sunbeam, and it's genuinely one of the more grounding things to watch in the middle of a stressful work session.
+08 is named after my actual cat. Whenever I look at her, she reminds me that I don't have to run around doing a hundred things like the world is ending — that it's fine to be lazy, do nothing for a second, and let time slow down.
 
-I wanted a tiny piece of software that borrowed that feeling — not another notification demanding attention, but the opposite: something that shows up, does nothing, and quietly suggests you could do nothing too, for a second.
+The name is also a quiet nod to *108 Bows of Gratitude*, a practice of gratitude and slowing down through repeated, mindful bows. 08 isn't really a Pomodoro clone underneath — "show every" and "stay on screen" borrow that familiar shape because it's practical, but the spirit is closer to the bows: not just clocking work and breaks, but actually pausing, noticing, being grateful for a moment. And the name itself is a small bow to her — my very special, very smart cat.
 
 She lives in your menu bar (right-click for "Show 08 now," to set her rhythm, or to quit).
 
