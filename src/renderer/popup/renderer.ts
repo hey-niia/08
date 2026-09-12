@@ -1,16 +1,15 @@
-const POSES = ["sleeping", "stretching", "playing"];
+document.addEventListener("DOMContentLoaded", () => {
+  const video = document.getElementById("cat-video") as HTMLVideoElement | null;
+  const emptyState = document.getElementById("empty-state");
+  if (!video || !emptyState) return;
 
-function playRandomPose(): void {
-  const all = document.querySelectorAll<HTMLElement>(".pose");
-  all.forEach((el) => el.classList.remove("visible"));
+  const params = new URLSearchParams(window.location.search);
+  const src = params.get("video");
 
-  const pose = POSES[Math.floor(Math.random() * POSES.length)];
-  const target = document.querySelector<HTMLElement>(".pose-" + pose);
-  if (!target) return;
-
-  // Force reflow so a repeated same-pose trigger restarts its CSS animations cleanly.
-  void target.offsetWidth;
-  target.classList.add("visible");
-}
-
-(window as unknown as { __playRandomPose: () => void }).__playRandomPose = playRandomPose;
+  if (src) {
+    video.src = src;
+  } else {
+    video.hidden = true;
+    emptyState.hidden = false;
+  }
+});

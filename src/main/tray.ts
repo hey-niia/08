@@ -1,7 +1,9 @@
-import { app, BrowserWindow, Menu, nativeImage, Tray } from "electron";
+import { app, BrowserWindow, Menu, nativeImage, shell, Tray } from "electron";
 import * as path from "path";
 import { togglePopup, onDurationChanged } from "./scheduler";
 import { getStayMinutes, setStayMinutes } from "./settings";
+import { ensureVideoDir, videoDir, hasVideo } from "./media";
+import { loadContent } from "./popupWindow";
 
 let tray: Tray | null = null;
 
@@ -31,6 +33,18 @@ function buildMenu(win: BrowserWindow): Menu {
           onDurationChanged(win);
         },
       })),
+    },
+    { type: "separator" },
+    {
+      label: hasVideo() ? "Replace cat video…" : "Add cat video…",
+      click: () => {
+        ensureVideoDir();
+        shell.openPath(videoDir());
+      },
+    },
+    {
+      label: "Reload video",
+      click: () => loadContent(win),
     },
     { type: "separator" },
     { label: "Quit", click: () => app.quit() },
