@@ -1,9 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-  <g fill="none" stroke="#000000" stroke-width="70" stroke-linejoin="round" stroke-linecap="round">
-    <path d="M 300 400 L 335 160 L 470 350" />
-    <path d="M 724 400 L 689 160 L 554 350" />
-    <circle cx="512" cy="565" r="300" />
+  <!-- Original silhouette in the spirit of a reference the user pointed at (a Font
+       Awesome Pro cat glyph, commercially licensed and not redistributable here) —
+       redrawn from scratch: notch-eared head, neck gap, curled tail. -->
+  <mask id="cuts">
+    <rect width="1024" height="1024" fill="#ffffff" />
+    <circle cx="452" cy="450" r="30" fill="#000000" />
+    <circle cx="572" cy="450" r="30" fill="#000000" />
+    <path
+      d="M 400 605 Q 512 640 624 605"
+      fill="none"
+      stroke="#000000"
+      stroke-width="26"
+      stroke-linecap="round"
+    />
+  </mask>
+  <g mask="url(#cuts)" fill="#000000">
+    <path
+      d="M 650 660 C 860 700 905 850 800 930"
+      fill="none"
+      stroke="#000000"
+      stroke-width="115"
+      stroke-linecap="round"
+    />
+    <ellipse cx="452" cy="945" rx="72" ry="78" />
+    <ellipse cx="576" cy="945" rx="72" ry="78" />
+    <ellipse cx="512" cy="790" rx="255" ry="195" />
+    <!-- head: ears are cut directly into its silhouette (a shared notch), not
+         separate spikes on a circle — that notch plus the neck gap above is what
+         keeps this reading as a cat instead of a devil at tray size. -->
+    <circle cx="512" cy="430" r="190" />
+    <path d="M 350 190 L 340 350 L 460 410 Z" />
+    <path d="M 674 190 L 684 350 L 564 410 Z" />
   </g>
-  <circle cx="410" cy="545" r="46" fill="#000000" />
-  <circle cx="614" cy="545" r="46" fill="#000000" />
 </svg>
