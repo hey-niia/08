@@ -84,8 +84,19 @@ export class CatInstance {
   private showCornerPose(pose: string): void {
     repositionToCorner(this.win);
     this.win.showInactive();
-    this.win.webContents.executeJavaScript(`window.__showPose && window.__showPose(${JSON.stringify(pose)})`).catch(() => {});
+    this.playPose(pose);
     this.armHideTimer();
+  }
+
+  /** Plays a random idle pose wherever the window currently sits (used between
+   * roam legs) — unlike showCornerPose(), it never repositions the window. */
+  private playIdlePose(): void {
+    const pose = CORNER_POSES[Math.floor(Math.random() * CORNER_POSES.length)];
+    this.playPose(pose);
+  }
+
+  private playPose(pose: string): void {
+    this.win.webContents.executeJavaScript(`window.__showPose && window.__showPose(${JSON.stringify(pose)})`).catch(() => {});
   }
 
   private startWalk(): void {
@@ -123,8 +134,16 @@ export class CatInstance {
           this.walkInterval = null;
         }
         if (this.walking) {
+          // Don't just freeze on the last running frame between legs — play a real
+          // idle pose (sitting/sleeping/stretching/playing) so there's something to
+          // see besides "standing" and "running" while she decides where to go next.
           const pause = ROAM_PAUSE_MIN_MS + Math.random() * (ROAM_PAUSE_MAX_MS - ROAM_PAUSE_MIN_MS);
-          this.roamPauseTimer = setTimeout(() => this.roamToNewTarget(), pause);
+          this.playIdlePose();
+          this.roamPauseTimer = setTimeout(() => {
+            if (!this.walking) return;
+            this.win.webContents.executeJavaScript("window.__showWalk && window.__showWalk(true)").catch(() => {});
+            this.roamToNewTarget();
+          }, pause);
         }
         return;
       }

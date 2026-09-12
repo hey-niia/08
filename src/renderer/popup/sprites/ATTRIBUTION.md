@@ -11,9 +11,12 @@ These three cats' sprites (`sprites/biscuit/`, `sprites/ash/`, `sprites/mocha/`)
 placeholder sprites taken from the
 ["cute_orange_cat"](https://github.com/wil-pe/CATAI/tree/main/cute_orange_cat)
 asset set in **[wil-pe/CATAI](https://github.com/wil-pe/CATAI)**, used under the
-project's MIT license. Biscuit is the unmodified original orange colorway; Ash
-and Mocha are recolored (`magick -colorspace Gray` and `magick -fill ... -colorize`
-respectively) from the same source frames.
+project's MIT license. It's the only cat model that repo ships (no second sprite
+set exists there to draw from), so Biscuit is the unmodified original orange
+colorway, and Ash/Mocha are recolors of the same source frames: Ash is a dark
+charcoal gray (`magick -colorspace Gray -level 0%,100%,0.5 -fill black -colorize 15%`,
+tuned to read as a distinct dark cat rather than a faded copy of Biscuit), and
+Mocha is a warm brown tint (`magick -fill ... -colorize ...`).
 
 They are **temporary stand-ins**, not final art — 08 is a different, much simpler
 app than CATAI (no chat, no AI, no per-cat personalities/dialogue) and doesn't
