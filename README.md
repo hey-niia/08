@@ -2,6 +2,8 @@
 
 A tiny Pomodoro-style break reminder shaped like a cat.
 
+**Universal binary** — runs natively on both Apple Silicon and Intel Macs.
+
 <p align="center">
   <img src="08-cover.png" width="720" alt="08, Biscuit, Ash, and Mocha wandering the screen with the tray menu open" />
 </p>
