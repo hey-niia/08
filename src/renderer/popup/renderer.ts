@@ -1,4 +1,4 @@
-const POSES = ["sleeping", "stretching", "playing"];
+const POSES = ["sitting", "sleeping", "stretching", "playing", "walking"];
 
 function playRandomPose(): void {
   const all = document.querySelectorAll<HTMLElement>(".pose");

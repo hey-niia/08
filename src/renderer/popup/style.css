@@ -46,6 +46,11 @@ body {
   animation: blink 5s steps(1) infinite;
 }
 
+.pose-sitting.visible .tail,
+.pose-walking.visible .tail {
+  animation: bob 1.6s steps(2) infinite, tailwag 2s steps(2) infinite;
+}
+
 .pose-stretching.visible .tail {
   animation: bob 1.6s steps(2) infinite, tailwag 2.2s steps(2) infinite;
 }
