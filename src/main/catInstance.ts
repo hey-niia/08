@@ -1,6 +1,6 @@
 import { BrowserWindow } from "electron";
 import { createPopupWindow, repositionToCorner } from "./popupWindow";
-import { getWalkTrack } from "./positioning";
+import { randomRoamPoint } from "./positioning";
 import { getStayMinutes } from "./settings";
 import { CatDef } from "./cats";
 
@@ -12,13 +12,17 @@ const WALK_PROBABILITY = 0.7;
 const WALK_STEP_PX = 6;
 const WALK_TICK_MS = 70;
 const WALK_FRAME_EVERY_N_TICKS = 2;
+const ROAM_PAUSE_MIN_MS = 400;
+const ROAM_PAUSE_MAX_MS = 1600;
 
 export class CatInstance {
   readonly win: BrowserWindow;
   readonly cat: CatDef;
   private hideTimer: ReturnType<typeof setTimeout> | null = null;
   private walkInterval: ReturnType<typeof setInterval> | null = null;
+  private roamPauseTimer: ReturnType<typeof setTimeout> | null = null;
   private walking = false;
+  private facingRight = false;
 
   constructor(cat: CatDef) {
     this.cat = cat;
@@ -58,6 +62,7 @@ export class CatInstance {
 
   destroy(): void {
     this.clearHideTimer();
+    this.clearRoamPauseTimer();
     if (this.walkInterval) clearInterval(this.walkInterval);
     this.win.destroy();
   }
@@ -85,49 +90,63 @@ export class CatInstance {
 
   private startWalk(): void {
     this.walking = true;
+    const [width, height] = this.win.getSize();
+    const start = randomRoamPoint(width, height);
+    this.win.setPosition(Math.round(start.x), Math.round(start.y));
     this.win.showInactive();
     this.win.webContents.executeJavaScript("window.__showWalk && window.__showWalk(true)").catch(() => {});
     this.armHideTimer();
-    this.runWalkPass();
+    this.roamToNewTarget();
   }
 
-  /** One crossing of the screen. When it reaches the far edge, loops into another
-   * pass from the opposite side — the cat keeps running back and forth until
-   * hide()/armHideTimer stops it, instead of vanishing after a single crossing. */
-  private runWalkPass(): void {
-    const [, height] = this.win.getSize();
-    const track = getWalkTrack(height);
-    const leftToRight = Math.random() < 0.5;
-    let x = leftToRight ? track.leftX : track.rightX;
-
-    this.win.setPosition(Math.round(x), Math.round(track.y));
-
+  /** Picks a random point anywhere on screen and walks to it; on arrival, pauses
+   * briefly like a cat deciding where to go next, then picks another — repeats
+   * until hide()/armHideTimer stops it, so it wanders freely instead of pacing
+   * a fixed line. */
+  private roamToNewTarget(): void {
+    if (!this.walking) return;
+    const [width, height] = this.win.getSize();
+    const target = randomRoamPoint(width, height);
     let tick = 0;
     let frame = 0;
-    const dir = leftToRight ? 1 : -1;
 
     if (this.walkInterval) clearInterval(this.walkInterval);
     this.walkInterval = setInterval(() => {
-      x += WALK_STEP_PX * dir;
-      tick++;
-      this.win.setPosition(Math.round(x), Math.round(track.y));
+      const [curX, curY] = this.win.getPosition();
+      const dx = target.x - curX;
+      const dy = target.y - curY;
+      const dist = Math.hypot(dx, dy);
 
-      if (tick % WALK_FRAME_EVERY_N_TICKS === 0) {
-        frame++;
-        this.win.webContents
-          .executeJavaScript(`window.__setWalkFrame && window.__setWalkFrame(${frame}, ${leftToRight})`)
-          .catch(() => {});
-      }
-
-      const reachedEnd = leftToRight ? x >= track.rightX : x <= track.leftX;
-      if (reachedEnd) {
+      if (dist <= WALK_STEP_PX) {
         if (this.walkInterval) {
           clearInterval(this.walkInterval);
           this.walkInterval = null;
         }
-        if (this.walking) this.runWalkPass();
+        if (this.walking) {
+          const pause = ROAM_PAUSE_MIN_MS + Math.random() * (ROAM_PAUSE_MAX_MS - ROAM_PAUSE_MIN_MS);
+          this.roamPauseTimer = setTimeout(() => this.roamToNewTarget(), pause);
+        }
+        return;
+      }
+
+      this.win.setPosition(Math.round(curX + (dx / dist) * WALK_STEP_PX), Math.round(curY + (dy / dist) * WALK_STEP_PX));
+
+      tick++;
+      if (tick % WALK_FRAME_EVERY_N_TICKS === 0) {
+        frame++;
+        if (Math.abs(dx) > 1) this.facingRight = dx > 0;
+        this.win.webContents
+          .executeJavaScript(`window.__setWalkFrame && window.__setWalkFrame(${frame}, ${this.facingRight})`)
+          .catch(() => {});
       }
     }, WALK_TICK_MS);
+  }
+
+  private clearRoamPauseTimer(): void {
+    if (this.roamPauseTimer) {
+      clearTimeout(this.roamPauseTimer);
+      this.roamPauseTimer = null;
+    }
   }
 
   private endWalk(): void {
@@ -135,6 +154,7 @@ export class CatInstance {
       clearInterval(this.walkInterval);
       this.walkInterval = null;
     }
+    this.clearRoamPauseTimer();
     this.walking = false;
     this.win.hide();
   }

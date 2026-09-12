@@ -10,13 +10,17 @@ export function getCornerPosition(width: number, height: number): { x: number; y
   return { x, y };
 }
 
-/** For the cross-screen walk: y sits on the work area floor, x spans just off-screen on both sides. */
-export function getWalkTrack(height: number): { y: number; leftX: number; rightX: number } {
+const ROAM_MARGIN = 20;
+
+/** A random point anywhere on screen (with a small margin) for the cat to wander to. */
+export function randomRoamPoint(width: number, height: number): { x: number; y: number } {
   const { workArea } = screen.getPrimaryDisplay();
-  const y = workArea.y + workArea.height - height;
+  const minX = workArea.x + ROAM_MARGIN;
+  const minY = workArea.y + ROAM_MARGIN;
+  const maxX = Math.max(minX, workArea.x + workArea.width - width - ROAM_MARGIN);
+  const maxY = Math.max(minY, workArea.y + workArea.height - height - ROAM_MARGIN);
   return {
-    y,
-    leftX: workArea.x - 40,
-    rightX: workArea.x + workArea.width + 40,
+    x: minX + Math.random() * (maxX - minX),
+    y: minY + Math.random() * (maxY - minY),
   };
 }
