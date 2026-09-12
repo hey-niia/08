@@ -1,13 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
   <g fill="#000000">
-    <path d="M 795 510 Q 910 535 862 645"
-      stroke="#000000" stroke-width="62" stroke-linecap="round" fill="none" />
-    <circle cx="620" cy="560" r="220" />
-    <circle cx="430" cy="660" r="150" />
-    <ellipse cx="350" cy="520" rx="85" ry="120" transform="rotate(-24 350 520)" />
-    <circle cx="300" cy="380" r="115" />
-    <path d="M 230 330 L 255 185 L 322 322 Z" />
-    <path d="M 300 312 L 352 170 L 382 320 Z" />
+    <path d="M 300 380 L 340 140 L 480 340 Z" />
+    <path d="M 724 380 L 684 140 L 544 340 Z" />
+    <circle cx="512" cy="560" r="320" />
   </g>
-  <circle cx="266" cy="372" r="13" fill="#ffffff" />
+  <circle cx="400" cy="540" r="54" fill="#ffffff" />
+  <circle cx="624" cy="540" r="54" fill="#ffffff" />
 </svg>
