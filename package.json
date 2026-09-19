@@ -1,6 +1,6 @@
 {
   "name": "08",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A little Mac app named after my cat. She walks onto your screen, sits down, and reminds you to step away from the computer and enjoy life.",
   "main": "dist/main/main.js",
   "author": "Niia Bieliavtseva",
@@ -23,8 +23,14 @@
       "dist/**/*"
     ],
     "extraResources": [
-      { "from": "build/trayTemplate.png", "to": "trayTemplate.png" },
-      { "from": "build/trayTemplate@2x.png", "to": "trayTemplate@2x.png" }
+      {
+        "from": "build/trayTemplate.png",
+        "to": "trayTemplate.png"
+      },
+      {
+        "from": "build/trayTemplate@2x.png",
+        "to": "trayTemplate@2x.png"
+      }
     ],
     "directories": {
       "output": "release"
@@ -33,8 +39,18 @@
       "icon": "build/icon.icns",
       "category": "public.app-category.utilities",
       "target": [
-        { "target": "dmg", "arch": ["universal"] },
-        { "target": "zip", "arch": ["universal"] }
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "universal"
+          ]
+        }
       ],
       "identity": null,
       "hardenedRuntime": false
