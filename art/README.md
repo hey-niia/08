@@ -31,23 +31,13 @@ that scale, the script downsamples to `GRID` cells (48 by default) and re-emits 
 `CELL = 5` px/cell for the final SVG. Bump `GRID` for more detail, `CELL` to change
 the on-screen size.
 
-## App icon & tray icon
+## Tray icon
 
-Both `build/icon.icns` and `build/trayTemplate.png`/`@2x.png` are generated
-directly from 08's own `sitting` sprite
-(`src/renderer/popup/sprites/08/sitting.png`) — not hand-drawn separately —
-so the logo is literally her, not a redrawn glyph. The sprite's eyes/belly
-patch are opaque white, which a macOS template image would just render as
-more solid black (template images only read alpha), so the first step turns
-those into real transparent cutouts:
+`build/trayTemplate.png` / `@2x.png` are 08's sitting silhouette as a macOS template image
+(black + transparency — macOS tints it to match the menu bar).
 
-```bash
-magick sitting.png -fuzz 0 -transparent white cutout.png
-```
+## Walk and sit masks
 
-From `cutout.png`: the tray icon is a plain nearest-neighbor resize to the
-real menu-bar heights (`-filter point -resize x22` / `x44`, to keep the pixel
-edges crisp instead of blurring them); the app icon is the same cutout
-resized and composited (`-gravity center -composite`) onto the existing
-white rounded-square background (`rx="220"` on a 1024×1024 canvas), at each
-size `iconutil` needs, then packed with `iconutil -c icns`.
+`src/renderer/popup/sprites/walk-body.png` and `sit-back.png` are 112×112 silhouettes
+(alpha only). The renderer fills them white and paints her markings, legs and tail on
+top, so changing her colours or pattern is a code change in `renderer.ts`, not new art.

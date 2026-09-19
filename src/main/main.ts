@@ -1,5 +1,5 @@
 import { app } from "electron";
-import { rebuildCats } from "./catManager";
+import { createCat } from "./catManager";
 import { createTray } from "./tray";
 
 app.whenReady().then(() => {
@@ -7,11 +7,11 @@ app.whenReady().then(() => {
     app.dock?.hide();
   }
 
-  rebuildCats();
+  createCat();
   createTray();
 });
 
 app.on("window-all-closed", () => {
-  // Cat windows are only ever hidden, never closed — this is a no-op safety net.
+  // The cat window is only ever hidden, never closed — this is a no-op safety net.
   // Intentionally not quitting here: only the tray's Quit does.
 });

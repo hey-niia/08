@@ -1,23 +1,7 @@
 import { app, Menu, nativeImage, Tray } from "electron";
 import * as path from "path";
-import {
-  anyOut,
-  toggleAll,
-  onDurationChanged,
-  rebuildCats,
-  restartSchedules,
-  getWindows,
-  onWindowsChanged,
-} from "./catManager";
-import {
-  getStayMinutes,
-  setStayMinutes,
-  getShowEveryMinutes,
-  setShowEveryMinutes,
-  getCatCount,
-  setCatCount,
-} from "./settings";
-import { CATS } from "./cats";
+import { isOut, toggle, onDurationChanged, restartSchedule, getWindow } from "./catManager";
+import { getStayMinutes, setStayMinutes, getShowEveryMinutes, setShowEveryMinutes } from "./settings";
 
 let tray: Tray | null = null;
 
@@ -41,29 +25,10 @@ const FREQUENCY_OPTIONS: { label: string; minutes: number | null }[] = [
 function buildMenu(): Menu {
   const currentStay = getStayMinutes();
   const currentFrequency = getShowEveryMinutes();
-  const currentCount = getCatCount();
 
   return Menu.buildFromTemplate([
-    { label: anyOut() ? "Hide" : "Show now", click: () => toggleAll() },
+    { label: isOut() ? "Hide" : "Show now", click: () => toggle() },
     { type: "separator" },
-    {
-      label: "Number of cats",
-      submenu: CATS.map((_cat, i) => {
-        const count = i + 1;
-        const names = CATS.slice(0, count)
-          .map((c) => c.name)
-          .join(", ");
-        return {
-          label: `${count} — ${names}`,
-          type: "radio" as const,
-          checked: currentCount === count,
-          click: () => {
-            setCatCount(count);
-            rebuildCats();
-          },
-        };
-      }),
-    },
     {
       label: "Show every",
       submenu: FREQUENCY_OPTIONS.map(({ label, minutes }) => ({
@@ -72,12 +37,12 @@ function buildMenu(): Menu {
         checked: currentFrequency === minutes,
         click: () => {
           setShowEveryMinutes(minutes);
-          restartSchedules();
+          restartSchedule();
         },
       })),
     },
     {
-      label: "Stay on screen",
+      label: "Break length",
       submenu: STAY_OPTIONS.map(({ label, minutes }) => ({
         label,
         type: "radio",
@@ -110,16 +75,10 @@ export function createTray(): Tray {
 
   const refresh = () => tray?.setContextMenu(buildMenu());
 
-  const attachWindowListeners = () => {
-    getWindows().forEach((win) => {
-      win.on("show", refresh);
-      win.on("hide", refresh);
-    });
-    refresh();
-  };
-
-  onWindowsChanged(attachWindowListeners);
-  attachWindowListeners();
+  const win = getWindow();
+  win?.on("show", refresh);
+  win?.on("hide", refresh);
+  refresh();
 
   return tray;
 }

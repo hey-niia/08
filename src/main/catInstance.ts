@@ -1,180 +1,73 @@
 import { BrowserWindow } from "electron";
-import { createPopupWindow, repositionToCorner } from "./popupWindow";
-import { randomRoamPoint } from "./positioning";
+import { createPopupWindow, stripBounds } from "./popupWindow";
 import { getStayMinutes } from "./settings";
-import { CatDef } from "./cats";
 
-const CORNER_POSES = ["sitting", "sleeping", "stretching", "playing"];
-// Walking is the flagship behavior (the actual cross-screen run) — make it the default,
-// with the quieter corner poses as an occasional accent rather than the common case.
-const WALK_PROBABILITY = 0.7;
+// If the renderer never reports she's gone (e.g. it crashed), hide the window anyway.
+const LEAVE_FALLBACK_MS = 30000;
 
-const WALK_STEP_PX = 6;
-const WALK_TICK_MS = 70;
-const WALK_FRAME_EVERY_N_TICKS = 2;
-const ROAM_PAUSE_MIN_MS = 400;
-const ROAM_PAUSE_MAX_MS = 1600;
-
+/** 08: walks in, sits for the break, walks off. The walk/sit itself runs in the renderer. */
 export class CatInstance {
   readonly win: BrowserWindow;
-  readonly cat: CatDef;
-  private hideTimer: ReturnType<typeof setTimeout> | null = null;
-  private walkInterval: ReturnType<typeof setInterval> | null = null;
-  private roamPauseTimer: ReturnType<typeof setTimeout> | null = null;
-  private walking = false;
-  private facingRight = false;
+  private out = false;
+  private fallback: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(cat: CatDef) {
-    this.cat = cat;
-    this.win = createPopupWindow(cat);
+  constructor() {
+    this.win = createPopupWindow();
+    // The renderer sets its title to "gone" once she has walked off screen.
+    this.win.webContents.on("page-title-updated", (_e, title) => {
+      if (title === "gone") this.finish();
+    });
   }
 
   isOut(): boolean {
-    return this.win.isVisible() || this.walking;
+    return this.out;
   }
 
-  /** Auto-schedule or manual "show now" both funnel through here — picks a random action. */
+  /** Scheduled break or manual "Show now". */
   trigger(): void {
-    if (this.isOut()) return;
-    if (Math.random() < WALK_PROBABILITY) {
-      this.startWalk();
-    } else {
-      const pose = CORNER_POSES[Math.floor(Math.random() * CORNER_POSES.length)];
-      this.showCornerPose(pose);
-    }
+    if (this.out) return;
+    this.out = true;
+    this.win.setBounds(stripBounds());
+    this.win.showInactive();
+    this.run(`window.__start && window.__start(${stayMs()})`);
   }
 
+  /** She gets up and walks off; the window hides once she's gone. */
   hide(): void {
-    this.clearHideTimer();
-    if (this.walking) this.endWalk();
-    else this.win.hide();
+    if (!this.out) return;
+    this.run("window.__leave && window.__leave()");
+    if (this.fallback) clearTimeout(this.fallback);
+    this.fallback = setTimeout(() => this.finish(), LEAVE_FALLBACK_MS);
   }
 
   toggle(): void {
-    if (this.isOut()) this.hide();
+    if (this.out) this.hide();
     else this.trigger();
   }
 
-  /** Call after the stay-duration setting changes, to reschedule a currently-visible cat. */
+  /** Call after the stay-duration setting changes, so a cat already out uses the new length. */
   onDurationChanged(): void {
-    if (this.win.isVisible()) this.armHideTimer();
+    if (this.out) this.run(`window.__setStay && window.__setStay(${stayMs()})`);
   }
 
   destroy(): void {
-    this.clearHideTimer();
-    this.clearRoamPauseTimer();
-    if (this.walkInterval) clearInterval(this.walkInterval);
+    if (this.fallback) clearTimeout(this.fallback);
     this.win.destroy();
   }
 
-  private clearHideTimer(): void {
-    if (this.hideTimer) {
-      clearTimeout(this.hideTimer);
-      this.hideTimer = null;
-    }
-  }
-
-  private armHideTimer(): void {
-    this.clearHideTimer();
-    const minutes = getStayMinutes();
-    if (minutes == null) return; // stays until manually hidden
-    this.hideTimer = setTimeout(() => this.hide(), minutes * 60 * 1000);
-  }
-
-  private showCornerPose(pose: string): void {
-    repositionToCorner(this.win);
-    this.win.showInactive();
-    this.playPose(pose);
-    this.armHideTimer();
-  }
-
-  /** Plays a random idle pose wherever the window currently sits (used between
-   * roam legs) — unlike showCornerPose(), it never repositions the window. */
-  private playIdlePose(): void {
-    const pose = CORNER_POSES[Math.floor(Math.random() * CORNER_POSES.length)];
-    this.playPose(pose);
-  }
-
-  private playPose(pose: string): void {
-    this.win.webContents.executeJavaScript(`window.__showPose && window.__showPose(${JSON.stringify(pose)})`).catch(() => {});
-  }
-
-  private startWalk(): void {
-    this.walking = true;
-    const [width, height] = this.win.getSize();
-    const start = randomRoamPoint(width, height);
-    this.win.setPosition(Math.round(start.x), Math.round(start.y));
-    this.win.showInactive();
-    this.win.webContents.executeJavaScript("window.__showWalk && window.__showWalk(true)").catch(() => {});
-    this.armHideTimer();
-    this.roamToNewTarget();
-  }
-
-  /** Picks a random point anywhere on screen and walks to it; on arrival, pauses
-   * briefly like a cat deciding where to go next, then picks another — repeats
-   * until hide()/armHideTimer stops it, so it wanders freely instead of pacing
-   * a fixed line. */
-  private roamToNewTarget(): void {
-    if (!this.walking) return;
-    const [width, height] = this.win.getSize();
-    const target = randomRoamPoint(width, height);
-    let tick = 0;
-    let frame = 0;
-
-    if (this.walkInterval) clearInterval(this.walkInterval);
-    this.walkInterval = setInterval(() => {
-      const [curX, curY] = this.win.getPosition();
-      const dx = target.x - curX;
-      const dy = target.y - curY;
-      const dist = Math.hypot(dx, dy);
-
-      if (dist <= WALK_STEP_PX) {
-        if (this.walkInterval) {
-          clearInterval(this.walkInterval);
-          this.walkInterval = null;
-        }
-        if (this.walking) {
-          // Don't just freeze on the last running frame between legs — play a real
-          // idle pose (sitting/sleeping/stretching/playing) so there's something to
-          // see besides "standing" and "running" while she decides where to go next.
-          const pause = ROAM_PAUSE_MIN_MS + Math.random() * (ROAM_PAUSE_MAX_MS - ROAM_PAUSE_MIN_MS);
-          this.playIdlePose();
-          this.roamPauseTimer = setTimeout(() => {
-            if (!this.walking) return;
-            this.win.webContents.executeJavaScript("window.__showWalk && window.__showWalk(true)").catch(() => {});
-            this.roamToNewTarget();
-          }, pause);
-        }
-        return;
-      }
-
-      this.win.setPosition(Math.round(curX + (dx / dist) * WALK_STEP_PX), Math.round(curY + (dy / dist) * WALK_STEP_PX));
-
-      tick++;
-      if (tick % WALK_FRAME_EVERY_N_TICKS === 0) {
-        frame++;
-        if (Math.abs(dx) > 1) this.facingRight = dx > 0;
-        this.win.webContents
-          .executeJavaScript(`window.__setWalkFrame && window.__setWalkFrame(${frame}, ${this.facingRight})`)
-          .catch(() => {});
-      }
-    }, WALK_TICK_MS);
-  }
-
-  private clearRoamPauseTimer(): void {
-    if (this.roamPauseTimer) {
-      clearTimeout(this.roamPauseTimer);
-      this.roamPauseTimer = null;
-    }
-  }
-
-  private endWalk(): void {
-    if (this.walkInterval) {
-      clearInterval(this.walkInterval);
-      this.walkInterval = null;
-    }
-    this.clearRoamPauseTimer();
-    this.walking = false;
+  private finish(): void {
+    if (this.fallback) clearTimeout(this.fallback);
+    this.fallback = null;
+    this.out = false;
     this.win.hide();
   }
+
+  private run(js: string): void {
+    this.win.webContents.executeJavaScript(js).catch(() => {});
+  }
+}
+
+function stayMs(): string {
+  const minutes = getStayMinutes();
+  return minutes == null ? "null" : String(minutes * 60 * 1000);
 }

@@ -1,7 +1,7 @@
 {
   "name": "08",
   "version": "0.1.0",
-  "description": "A tiny Pomodoro-style break reminder shaped like a cat.",
+  "description": "A little Mac app named after my cat. She walks onto your screen, sits down, and reminds you to step away from the computer and enjoy life.",
   "main": "dist/main/main.js",
   "author": "Niia Bieliavtseva",
   "license": "MIT",

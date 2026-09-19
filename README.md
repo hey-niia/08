@@ -1,11 +1,11 @@
 # 08
 
-A tiny Pomodoro-style break reminder shaped like a cat.
+A little Mac app named after my cat. Every now and then she walks onto your screen, sits down, and reminds you to step away from the computer and enjoy life for a bit.
 
 **Universal binary** — runs natively on both Apple Silicon and Intel Macs.
 
 <p align="center">
-  <img src="08-cover.png" width="720" alt="08, Biscuit, Ash, and Mocha wandering the screen with the tray menu open" />
+  <img src="08-cover.png" width="720" alt="08, a white-and-grey pixel cat, sitting in the middle of a dark Mac desktop" />
 </p>
 
 ## Download
@@ -20,23 +20,14 @@ xattr -cr /Applications/08.app
 
 ## About
 
-Tell 08 how often to check in and how long to stay, and she'll show up — napping, stretching, crouching for a snack, or actually wandering the screen like she owns it — then disappear. Everything's set from the tray icon:
+08 is my cat. Whenever I look at her, she reminds me that there's a whole life away from the screen — and that it's fine to slow down and go live it for a bit.
 
-- **Number of cats** — 1 to 4. Just 08, or bring in Biscuit, Ash, and Mocha too, each on their own independent schedule
-- **Show every** — 5 / 15 / 25 / 50 minutes, or off (manual only)
-- **Stay on screen** — 1 / 3 / 5 / 10 / 15 minutes, or until you hide her
+The app does the same: after you've worked for a while, she slowly walks in, sits in the middle of your screen and swishes her tail. That's your cue to get up too: stretch, look out of the window, make some tea. When the break is over, she walks away.
 
-No tasks, no streaks, no guilt-tripping if you skip a "session." No chat, no clicking through menus, no productivity feature hiding underneath, either. Just a small, pixelated cue that it's time to look away for a second.
+Right-click her icon in the menu bar to set:
 
-## The story
-
-08 is named after my actual cat. Whenever I look at her, she reminds me that I don't have to run around doing a hundred things like the world is ending — that it's fine to be lazy, do nothing for a second, and let time slow down.
-
-The name is also a quiet nod to *108 Bows of Gratitude*, a practice of gratitude and slowing down through repeated, mindful bows. 08 isn't really a Pomodoro clone underneath — "show every" and "stay on screen" borrow that familiar shape because it's practical, but the spirit is closer to the bows: not just clocking work and breaks, but actually pausing, noticing, being grateful for a moment. And the name itself is a small bow to her — my very special, very smart cat.
-
-She lives in your menu bar (right-click for "Show now," to set her rhythm, choose how many cats, or to quit).
-
-**The roster.** 08 herself is black-and-white, original art (see `art/` for the generator). Biscuit, Ash, and Mocha are placeholder sprites borrowed from [wil-pe/CATAI](https://github.com/wil-pe/CATAI) (MIT-licensed — see `src/renderer/popup/sprites/ATTRIBUTION.md`) while more original art is still in progress.
+- **Show every** — how long you work before she comes (5 / 15 / 25 / 50 minutes, or off)
+- **Break length** — how long she sits with you (1 / 3 / 5 / 10 / 15 minutes, or until you send her away)
 
 ## Development
 
@@ -46,8 +37,8 @@ npm start          # run in dev
 npm run dist:mac   # build an unsigned universal dmg + zip
 ```
 
-Built with Electron + TypeScript. See `src/main` for the app shell (`cats.ts` roster, `catInstance.ts`/`catManager.ts` for per-cat behavior and scheduling, tray, window) and `src/renderer/popup` for the sprites and animation.
+Built with Electron + TypeScript. See `src/main` for the app shell (`catInstance.ts`/`catManager.ts` for her schedule, tray, window) and `src/renderer/popup` for the pixel-art animation.
 
 ## License
 
-MIT for the app itself. The placeholder sprites in `src/renderer/popup/sprites/` are third-party (MIT-licensed CATAI assets) — see `src/renderer/popup/sprites/ATTRIBUTION.md`.
+MIT.
